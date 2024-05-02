@@ -32,7 +32,7 @@ specific format. There is a specific process for adopting a SKIP. And there is
 a process for recording when a SKIP is no longer the accepted practice.
 
 SKIPs are living documents. They change over time in both minor and major ways.
-The SKIP itself, combined with Notion’s change tracking, should indicate how it
+The SKIP itself, combined with Git's change tracking, should indicate how it
 has changed.
 
 It is customary to refer to a SKIP by its number (”SKIP 004,” pronounced “skip
