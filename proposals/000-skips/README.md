@@ -36,7 +36,7 @@ The SKIP itself, combined with Notion’s change tracking, should indicate how i
 has changed.
 
 It is customary to refer to a SKIP by its number (”SKIP 004,” pronounced “skip
-oh-oh-four” or “fip four”). When necessary, it may also be referenced by its
+oh-oh-four” or “skip four”). When necessary, it may also be referenced by its
 version (”SKIP 000 v1”) 
 
 ### The Document Head
