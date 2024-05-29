@@ -74,6 +74,21 @@ var isCrdInstalled = func(ctx context.Context, k provider.Provider, check provid
 
 We can then have a default set of checks that can be performed on the cluster with the possibility of customizing them if required. 
 
+The current list of checks is as follows. All these checks makes use of Kubernetes API's to run. 
+
+Note: Based on permissions of the user running these checks, the checks may fail due to permission issues. We can consider to add `checkPermissionsFn` as another check to the list, which can be a prerequisite to all other checks.
+
+```
+var defaultChecksMap = map[string]provider.CheckFn{
+	CheckCRD:                      isCrdInstalled,            //check if CRD is installed or not
+	CheckContainerdVersionOnNodes: containerdVersionCheck,    //check runtime info in node spec
+	CheckRuntimeClass:             runtimeClassCheck,         //check if runtime class is configured or not
+	CheckDeploymentRunning:        deploymentRunningCheck,    //check if the deployment is running in any namespace
+	CheckBinaryInstalledOnNodes:   binaryVersionCheck,        //check, using debug pod functionality, if a binary is present on the node, and what is the version
+}
+
+```
+
 ### how multiple providers are supported
 
 Because these checks will be using Kubernetes API to perform checks, they should work on most of the Kubernetes distribution providers by default. However, in case we need to override the checks for a given distribution, we can do so by implementing the following interface for that provider (specifically the GetCheckOverride function):
