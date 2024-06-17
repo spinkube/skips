@@ -52,7 +52,7 @@ The list can be simplified to abstract how configuration is set (flag, file, or 
 - Spin execution configuration
 - Shim execution configuration
 
-Note, that this list does not include Wasm instance environment variables. This document is focused on configuring the Wasm engine, namely Spin. The proposed approach does conclude that Wasm instance environment variables should not be configurable from the PodSpec; rather, Spin users should use configuration variables instead. See the ["Configuring Spin Execution in Container Environment Variables" section](#configuring-spin-execution-in-container-environment-variables) for more context.
+Note, that this list does not include Wasm instance environment variables. This document is focused on configuring the Wasm engine, namely Spin. The proposed approach does conclude that Wasm instance environment variables should not be configurable from the PodSpec; rather, Spin users should use application variables instead. See the ["Configuring Spin Execution in Container Environment Variables" section](#configuring-spin-execution-in-container-environment-variables) for more context.
 
 ## Terminology
 
@@ -71,6 +71,7 @@ Note, that this list does not include Wasm instance environment variables. This 
 | Wasm execution engine | An engine that execute Wasm components using a Wasm runtime, i.e. Spin which uses Wasmtime |
 | Wasm runtime | A WebAssembly runtime, i.e. Wasmtime |
 | Wasmtime | The WebAssembly runtime that Spin uses to execute WebAssembly components |
+| Spin Application Variables | Variables defined in a Spin application manifest (in the `[variables]` section) with values that can be dynamically updated by an [application variables provider](https://developer.fermyon.com/spin/v2/dynamic-configuration#application-variables-runtime-configuration). |
 
 ### Current Workarounds
 
@@ -165,7 +166,7 @@ All Spin execution configuration will be defined as known environment variables 
 
 These values will be configured as environment variables in the Container spec. At first, this feels unadvisable, since it differs from user's previous understanding of Linux container environment variables. Deploying a Spin app shouldn't be compared to deploying a Linux container. A Linux container has one virtualized environment and listener. In a Linux container context, environment variables are set in the app execution and affect the business logic. On the other hand, a Spin app can have N many triggers and components, each of which has its own virtualized environment. While Spin does support setting environment variables in components, they are static. We have never encouraged the use of `spin up --env`, as it is more of a developer shortcut, since it sets the same set of environment variables in all components of an app. This makes each sandbox bigger than necessary and doesn't emphasize the component model's strengths.
 
-That being said, we should steer Spin developers towards using configuration variables, which are already supported in the `SpinApp` CRD. In documentation, we should clarify the distinction between a Spin app and a Linux container, being sure to specify that container environment variables configure the Spin runtime with environment variables and that Spin Wasm components can only be configured with Spin configuration variables.
+That being said, we should steer Spin developers towards using [application variables](https://developer.fermyon.com/spin/v2/variables#application-variables), whose values can be configured in the [`SpinApp` CRD](https://www.spinkube.dev/docs/spin-operator/reference/spin-app/#spinappspecvariablesindex) if using the environment variable provider. Application variables can also be dynamically updated using [Azure Key Vault](https://developer.fermyon.com/spin/v2/dynamic-configuration#azure-key-vault-application-variable-provider) or [Vault](https://developer.fermyon.com/spin/v2/dynamic-configuration#azure-key-vault-application-variable-provider). In documentation, we should clarify the distinction between a Spin app and a Linux container, being sure to specify that container environment variables configure the Spin runtime with environment variables and that Spin Wasm components can only be configured with Spin application variables.
 
 Each of these environment variables should be configurable from the SpinApp CRD under `SpinApp.spec.runtimeEnvironment`
 
