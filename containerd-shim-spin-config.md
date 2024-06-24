@@ -130,8 +130,7 @@ creating multiple executors with distinct configuration.
 
 All Spin application execution configuration will be defined as known
 environment variables with an expected range of values. All variables must have
-a `SPIN` prefix and trigger configuration keys will have the extended prefix
-"SPIN_<TRIGGER NAME>". Each executor will define which environment variables it
+a `SPIN` prefix. Each executor will define which environment variables it
 supports. The following is a subset of configuration values that may be
 supported:
 
@@ -141,6 +140,10 @@ supported:
 | SPIN_OTEL_EXPORTER_OTLP_ENDPOINT | `OTEL_EXPORTER_OTLP_ENDPOINT=http://123.4.5.6:4318 spin up` | "http://123.4.5.6:4318" |
 | SPIN_LOG_DIR | `spin up --log-dir /tmp/log` | "/tmp/log" |
 | SPIN_RUNTIME_CONFIG_FILE | `spin up --runtime-config-file /var/config.toml` | "/var/config.toml" |
+| SPIN_AWS_DEFAULT_REGION | `AWS_DEFAULT_REGION="us-west-2" spin up` | "us-west-2" |
+| SPIN_AWS_ACCESS_KEY_ID | `AWS_ACCESS_KEY_ID="ABC" spin up` | "ABC" |
+| SPIN_AWS_SECRET_ACCESS_KEY | `AWS_SECRET_ACCESS_KEY="123" spin up` | "123" |
+| SPIN_AWS_SESSION_TOKEN | `AWS_SESSION_TOKEN="token" spin up` | "token" |
 
 These values will be configured as environment variables in the Container spec,
 and will be filtered out from all other Container environment variables. All
@@ -170,8 +173,8 @@ spec:
   replicas: 1
   executor: containerd-shim-spin
   runtimeEnvironment:
-    - name: SPIN_HTTP_LISTEN_ADDR
-      value: "0.0.0.0:3000"
+  - name: SPIN_HTTP_LISTEN_ADDR
+    value: "0.0.0.0:3000"
 ```
 
 > Note: `runtimeEnvironment` is distinct from `runtimeConfig`
