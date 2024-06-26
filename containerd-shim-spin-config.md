@@ -128,37 +128,35 @@ creating multiple executors with distinct configuration.
 
 ### Spin Application Execution Configuration
 
-All Spin application execution configuration will be defined as known
-environment variables with an expected range of values. All variables must have
-a `SPIN` prefix. Each executor will define which environment variables it
-supports. The following is a subset of configuration values that may be
+Spin application execution can be configured via container environment variables, which are exposed to the shim. The following is a subset of configuration values that may be
 supported:
 
 | Key | Spin CLI |  Example Value|
 | ---- | ---- | ---- |
 | SPIN_HTTP_LISTEN_ADDR | `spin up --listen` | "0.0.0.0:3000" |
-| SPIN_OTEL_EXPORTER_OTLP_ENDPOINT | `OTEL_EXPORTER_OTLP_ENDPOINT=http://123.4.5.6:4318 spin up` | "http://123.4.5.6:4318" |
+| OTEL_EXPORTER_OTLP_ENDPOINT | `OTEL_EXPORTER_OTLP_ENDPOINT=http://123.4.5.6:4318 spin up` | "http://123.4.5.6:4318" |
 | SPIN_LOG_DIR | `spin up --log-dir /tmp/log` | "/tmp/log" |
 | SPIN_RUNTIME_CONFIG_FILE | `spin up --runtime-config-file /var/config.toml` | "/var/config.toml" |
-| SPIN_AWS_DEFAULT_REGION | `AWS_DEFAULT_REGION="us-west-2" spin up` | "us-west-2" |
-| SPIN_AWS_ACCESS_KEY_ID | `AWS_ACCESS_KEY_ID="ABC" spin up` | "ABC" |
-| SPIN_AWS_SECRET_ACCESS_KEY | `AWS_SECRET_ACCESS_KEY="123" spin up` | "123" |
-| SPIN_AWS_SESSION_TOKEN | `AWS_SESSION_TOKEN="token" spin up` | "token" |
+| AWS_DEFAULT_REGION | `AWS_DEFAULT_REGION="us-west-2" spin up` | "us-west-2" |
+| AWS_ACCESS_KEY_ID | `AWS_ACCESS_KEY_ID="ABC" spin up` | "ABC" |
+| AWS_SECRET_ACCESS_KEY | `AWS_SECRET_ACCESS_KEY="123" spin up` | "123" |
+| AWS_SESSION_TOKEN | `AWS_SESSION_TOKEN="token" spin up` | "token" |
 
-These values will be configured as environment variables in the Container spec,
-and will be filtered out from all other Container environment variables. All
-environment variables that do not have the `SPIN` prefix, will be set in the
-environment of the Wasm component instances before execution. The fact that some
-container environment variables are configuring the runtime rather than being
-set in the application will feel strange for users who are used to configuring
-application environment variables in Linux containers. Unfortunately, as
-explained in the [alternatives section](#alternatives-considered), there is no
-other smooth path to configuring execution at the application level.
-
-> Note: Variables prefixed with `SPIN_VARIABLE` will be set as [Spin application
-> variables](https://developer.fermyon.com/spin/v2/variables#application-variables)
-> via the Spin environment variable provider as is the experience with the Spin
-> CLI.
+These values will be configured as environment variables in the Container spec.
+At first, this feels strange, since it differs from user's previous
+understanding of Linux container environment variables. Deploying a Spin app
+shouldn't be compared to deploying a Linux container. A Linux container has one
+virtualized environment and listener. In a Linux container context, environment
+variables are set in the app execution and affect the business logic. On the
+other hand, a Spin app can have N many triggers and components, each of which
+has its own virtualized environment. While Spin does support setting environment
+variables in components, they are static. We have never encouraged the use of
+`spin up --env`, as it is more of a developer shortcut, since it sets the same
+set of environment variables in all components of an app. This makes each
+sandbox bigger than necessary and doesn't emphasize the component model's
+strengths. See the [Spin Application Variables
+section](#spin-application-variables) for a discussion on how variables will be
+exposed to application components.
 
 Each of the Spin application execution environment variables should be
 configurable from the SpinApp CRD under `SpinApp.spec.runtimeEnvironment`
@@ -193,36 +191,61 @@ spec
     ...
 ```
 
-The `containerd-shim-spin` instance will look for all supported Spin execution
+The `containerd-shim-spin` instance will look for execution
 environment variables and configure execution accordingly.
 
-#### Spin Application Environment Variables
+#### Spin Application Variables
 
-As mentioned in the previous section, all environment variables without a `SPIN`
-prefix will be forwarded to the environment of each component in the Spin app
-upon execution. At first, this may seem unadvisable. While a Linux container
-which has one virtualized environment, a Spin app can have N many isolated
-components. Setting the environment variables in all of the components seems to
-go against the goal of granular sandbox configuration. This is why, in general,
-Spin encourages the use of [application
-variables](https://developer.fermyon.com/spin/v2/variables#application-variables)
-over `spin up --env`, which sets the same set of environment variables in all
-components of an app.
-
-However, in order for SpinKube to provide the most Kubernetes native experience,
-it should forward these environment variables. First of all, many Kubernetes
-libraries expect Kubernetes [cluster information environment
-variables](https://kubernetes.io/docs/concepts/containers/container-environment/#cluster-information)
-such as `KUBERNETES_SERVICE_HOST` and `KUBERNETES_SERVICE_PORT` to be available
-and would be incompatible otherwise. Secondly, the alternative would be to use
-[Spin application
+Instead of configuring their applications with environment variables, SpinKube
+users should use [Spin application
 variables](https://developer.fermyon.com/spin/v2/variables#application-variables).
-However, the variable names must be known and set in the Spin manifest and it
-seems strange to mingle the developer  and operator lifecycles by adding a
-`SIMPLE_SPINAPP_SERVICE_HOST` variable to a `spin.toml`.
 
-While, by default, these environment variables will be passed to components.
-This can be disabled by setting `SPIN_DISABLE_CONTAINER_ENV_VARS`.
+These variables are declared in a Spin application manifest (`spin.toml`) and
+their values can be configured in the [`SpinApp`
+CRD](https://www.spinkube.dev/docs/spin-operator/reference/spin-app/#spinappspecvariablesindex)
+if using the environment variable provider. Application variables can also be
+dynamically updated using [Azure Key
+Vault](https://developer.fermyon.com/spin/v2/dynamic-configuration#azure-key-vault-application-variable-provider)
+or
+[Vault](https://developer.fermyon.com/spin/v2/dynamic-configuration#azure-key-vault-application-variable-provider).
+
+However, requiring that all variables be set by an administrator is likely too
+limiting for Kubernetes contexts where there are some cases in which the
+scheduler or webhooks inject environment variables into containers that
+components wish to access. For example, by default Kubernetes injects [cluster
+information environment
+variables](https://kubernetes.io/docs/concepts/containers/container-environment/#cluster-information)
+such as `KUBERNETES_SERVICE_HOST` and `KUBERNETES_SERVICE_PORT` into each
+container. Many Kubernetes libraries expect these to be available and would be
+incompatible otherwise. However, the shim should not simply inject all container
+environment variables into every component's environment. Instead, the shim will
+make all container environment variables available as Spin application
+variables by resetting them in the environment with the `SPIN_VARIABLE` prefix. This means
+that Spin components can get access to these variables if specifically
+configured in the Spin manifest to have access. For example, say a a component
+wants access to the `KUBERNETES_SERVICE_ADDRESS` container environment variable,
+it would configure this in the Spin.toml as follows:
+
+```toml
+[variables]
+kubernetes_service_address = { required = true }
+
+[component.example]
+source = "target/wasm32-wasi/release/example.wasm"
+allowed_outbound_hosts = []
+[component.example.variables]
+kubernetes_service_address = "{{ kubernetes_service_address }}"
+```
+
+Then, it can be accessed in the Spin app using the variables SDK:
+
+```rust
+let addr = variables::get("kubernetes_service_address")?;
+```
+
+In documentation, we should clarify that Spin Wasm components can only be
+configured with Spin application variables. The variable names must be known and
+set in the Spin manifest, as in the above example.
 
 #### Spin Shim Executor Configuration
 
