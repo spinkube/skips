@@ -6,7 +6,7 @@ Owner: Kate Goldenring <kate.goldenring@fermyon.com>
 
 Impacted Projects:
 
-- [x] spin-operator
+- [ ] spin-operator
 - [ ] `spin kube` plugin
 - [x] runtime-class-manager
 - [x] containerd-shim-spin
@@ -89,60 +89,72 @@ In summary, configuration can be broken out into two groups:
 
 ## Terminology
 
-| Term | Definition |
-| ---- | ---------- |
-| Container runtime | A program that runs and manages the lifecycle of containers, or in this case Spin apps, i.e. Youki. |
-| CRD | Custom Resource Definition, a Kubernetes extension mechanism for defining custom resources |
-| Environment Variables | Variables that are part of the environment in which a process runs |
-| PodSpec | A Kubernetes object that describes the specification of a pod, including its containers, volumes, and other properties |
-| Shim | In this document, a shortened reference for the `containerd-shim-spin` containerd shim |
-| Spin | A CLI tool for scaffolding, building and running serverless Wasm components |
-| SpinApp | A custom resource definition (CRD) in Kubernetes that represents a Spin application |
-| SpinAppExecutor | A custom resource definition (CRD) in Kubernetes that represents a Spin executor (such as the Spin containerd shim) |
-| SpinKube | A Kubernetes operator for managing Spin applications |
-| Spin runtime | A Wasm execution engine that executes Wasm components using Wasmtime |
+| Term                       | Definition                                                                                                                                                                                                                                                                   |
+|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Container runtime          | A program that runs and manages the lifecycle of containers, or in this case Spin apps, i.e. Youki.                                                                                                                                                                          |
+| CRD                        | Custom Resource Definition, a Kubernetes extension mechanism for defining custom resources                                                                                                                                                                                   |
+| Environment Variables      | Variables that are part of the environment in which a process runs                                                                                                                                                                                                           |
+| PodSpec                    | A Kubernetes object that describes the specification of a pod, including its containers, volumes, and other properties                                                                                                                                                       |
+| Shim                       | In this document, a shortened reference for the `containerd-shim-spin` containerd shim                                                                                                                                                                                       |
+| Spin                       | A CLI tool for scaffolding, building and running serverless Wasm components                                                                                                                                                                                                  |
+| SpinApp                    | A custom resource definition (CRD) in Kubernetes that represents a Spin application                                                                                                                                                                                          |
+| SpinAppExecutor            | A custom resource definition (CRD) in Kubernetes that represents a Spin executor (such as the Spin containerd shim)                                                                                                                                                          |
+| SpinKube                   | A Kubernetes operator for managing Spin applications                                                                                                                                                                                                                         |
+| Spin runtime               | A Wasm execution engine that executes Wasm components using Wasmtime                                                                                                                                                                                                         |
 | Spin Application Variables | Variables defined in a Spin application manifest (in the `[variables]` section) with values that can be dynamically updated by an [application variables provider](https://developer.fermyon.com/spin/v2/dynamic-configuration#application-variables-runtime-configuration). |
-| Wasmtime | The WebAssembly runtime that Spin uses to execute WebAssembly components |
+| Wasmtime                   | The WebAssembly runtime that Spin uses to execute WebAssembly components                                                                                                                                                                                                     |
 
 ## Proposal
 
-As laid out in the [background](#background), this SKIP aims to enable the following categories of configuration:
+As laid out in the [background](#background), this SKIP aims to enable the
+following categories of configuration:
 
 - Spin application execution configuration
 - Executor configuration
 
-The first category pertains to the execution of a single Spin application, while the later discusses how to configure the platform.
+The first category pertains to the execution of a single Spin application, while
+the later discusses how to configure the platform. 
 
-### User Interface
-
-How does a user set this configuration? As is standard with Kubernetes,
-configuration should be set in Custom Resource Definitions. Rather than creating
-a new CRD for configuration, the `SpinAppExecutor` and `SpinApp` CRDs can be
-extended to support configuring the platform and application execution,
-respectively. Users should be able to configure Spin resources and executions
-side-by-side in the `SpinApp` CRD. On the other hand, platform configuration is
-not done on a per application basis. It could be configured in the
-`SpinAppExecutor` CRD. This would help users easily see how the platform is
-configured for the executor their application is using. It would also enable
-creating multiple executors with distinct configuration.
+This SKIP focuses on how the `containerd-shim-spin` and `runwasi` will consume
+configuration. While this SKIP encourages the use of the SpinKube `SpinApp` and
+`SpinAppExecutor` CRDs to set configuration, it does not propose the structure
+of the changes to the CRDs to add configuration. That should be proposed in a
+future SKIP.
 
 ### Spin Application Execution Configuration
 
-Spin application execution can be configured via container environment variables, which are exposed to the shim. The following is a subset of configuration values that may be
-supported:
+Spin application execution can be configured via container environment
+variables, which are exposed to the shim. The following is a subset of
+configuration values that may be supported:
 
-| Key | Spin CLI |  Example Value|
-| ---- | ---- | ---- |
-| SPIN_HTTP_LISTEN_ADDR | `spin up --listen` | "0.0.0.0:3000" |
+| Key                         | Spin CLI                                                    | Example Value           |
+|-----------------------------|-------------------------------------------------------------|-------------------------|
+| SPIN_HTTP_LISTEN_ADDR       | `spin up --listen`                                          | "0.0.0.0:3000"          |
 | OTEL_EXPORTER_OTLP_ENDPOINT | `OTEL_EXPORTER_OTLP_ENDPOINT=http://123.4.5.6:4318 spin up` | "http://123.4.5.6:4318" |
-| SPIN_LOG_DIR | `spin up --log-dir /tmp/log` | "/tmp/log" |
-| SPIN_RUNTIME_CONFIG_FILE | `spin up --runtime-config-file /var/config.toml` | "/var/config.toml" |
-| AWS_DEFAULT_REGION | `AWS_DEFAULT_REGION="us-west-2" spin up` | "us-west-2" |
-| AWS_ACCESS_KEY_ID | `AWS_ACCESS_KEY_ID="ABC" spin up` | "ABC" |
-| AWS_SECRET_ACCESS_KEY | `AWS_SECRET_ACCESS_KEY="123" spin up` | "123" |
-| AWS_SESSION_TOKEN | `AWS_SESSION_TOKEN="token" spin up` | "token" |
+| SPIN_LOG_DIR                | `spin up --log-dir /tmp/log`                                | "/tmp/log"              |
+| SPIN_RUNTIME_CONFIG_FILE    | `spin up --runtime-config-file /var/config.toml`            | "/var/config.toml"      |
+| AWS_DEFAULT_REGION          | `AWS_DEFAULT_REGION="us-west-2" spin up`                    | "us-west-2"             |
+| AWS_ACCESS_KEY_ID           | `AWS_ACCESS_KEY_ID="ABC" spin up`                           | "ABC"                   |
+| AWS_SECRET_ACCESS_KEY       | `AWS_SECRET_ACCESS_KEY="123" spin up`                       | "123"                   |
+| AWS_SESSION_TOKEN           | `AWS_SESSION_TOKEN="token" spin up`                         | "token"                 |
 
 These values will be configured as environment variables in the Container spec.
+For example, the following sets the listen address for the HTTP trigger:
+
+```sh
+spec
+  containers:
+  - name: myspinapp
+    image: "ghcr.io/myuser:v1"
+    env:
+    - name: SPIN_HTTP_LISTEN_ADDR
+      value: "0.0.0.0:3000"
+    ...
+```
+
+The `containerd-shim-spin` instance will look for execution environment
+variables and configure execution accordingly.
+
 At first, this feels strange, since it differs from user's previous
 understanding of Linux container environment variables. Deploying a Spin app
 shouldn't be compared to deploying a Linux container. A Linux container has one
@@ -157,42 +169,6 @@ sandbox bigger than necessary and doesn't emphasize the component model's
 strengths. See the [Spin Application Variables
 section](#spin-application-variables) for a discussion on how variables will be
 exposed to application components.
-
-Each of the Spin application execution environment variables should be
-configurable from the SpinApp CRD under `SpinApp.spec.runtimeEnvironment`
-
-```sh
-apiVersion: core.spinoperator.dev/v1alpha1
-kind: SpinApp
-metadata:
-  name: myspinapp
-spec:
-  image: "ghcr.io/myuser:v1"
-  replicas: 1
-  executor: containerd-shim-spin
-  runtimeEnvironment:
-  - name: SPIN_HTTP_LISTEN_ADDR
-    value: "0.0.0.0:3000"
-```
-
-> Note: `runtimeEnvironment` is distinct from `runtimeConfig`
-
-The Spin Operator will then add each key-value pair to the Deployment of the
-SpinApp:
-
-```sh
-spec
-  containers:
-  - name: myspinapp
-    image: "ghcr.io/myuser:v1"
-    env:
-    - name: SPIN_HTTP_LISTEN_ADDR
-      value: "0.0.0.0:3000"
-    ...
-```
-
-The `containerd-shim-spin` instance will look for execution
-environment variables and configure execution accordingly.
 
 #### Spin Application Variables
 
@@ -219,8 +195,8 @@ such as `KUBERNETES_SERVICE_HOST` and `KUBERNETES_SERVICE_PORT` into each
 container. Many Kubernetes libraries expect these to be available and would be
 incompatible otherwise. However, the shim should not simply inject all container
 environment variables into every component's environment. Instead, the shim will
-make all container environment variables available as Spin application
-variables by resetting them in the environment with the `SPIN_VARIABLE` prefix. This means
+make all container environment variables available as Spin application variables
+by resetting them in the environment with the `SPIN_VARIABLE` prefix. This means
 that Spin components can get access to these variables if specifically
 configured in the Spin manifest to have access. For example, say a a component
 wants access to the `KUBERNETES_SERVICE_ADDRESS` container environment variable,
@@ -282,10 +258,10 @@ own configuration from these containerd runtime options.
 
 The following are Spin shim and Runwasi options that should be configurable:
 
-| Key | Example Value | Scope | 
-| ---- | ---- | ---- |
-| DISABLE_PRECOMPILATION | "true" | shim |
-| GRPC_MAX_WRITE_CHUNK_SIZE_BYTES | "15728640" | [Runwasi](https://github.com/containerd/runwasi/blob/7cc5e5a8025f1508c264dee1faf1c8c57cf645a1/crates/containerd-shim-wasm/src/sandbox/containerd/client.rs#L38) |
+| Key                             | Example Value | Scope                                                                                                                                                           |
+|---------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DISABLE_PRECOMPILATION          | "true"        | shim                                                                                                                                                            |
+| GRPC_MAX_WRITE_CHUNK_SIZE_BYTES | "15728640"    | [Runwasi](https://github.com/containerd/runwasi/blob/7cc5e5a8025f1508c264dee1faf1c8c57cf645a1/crates/containerd-shim-wasm/src/sandbox/containerd/client.rs#L38) |
 
 Ideally, these options could be set in the `SpinAppExecutor` CRD. Then, the
 RuntimeClassManager can watch the resource and update and restart containerd as
@@ -389,8 +365,8 @@ The following are alternate strategies for configuring the Spin runtime in the
     While the shim currently has access to these arguments from the
     [`RuntimeContext`
     args](https://github.com/containerd/runwasi/blob/f5f497c4b21a5d55613095a3ae878c4ef4b83b91/crates/containerd-shim-wasm/src/container/context.rs#L14),
-    the shim does not parse these arguments and would need to be enlightened in a
-    similar manner as the Spin CLI to discern which are for which trigger. While
-    this is approach is technically feasible, the user experience is poor. It
-    unnecessarily requires the user to understand the Spin CLI in order to use the
-    Spin runtime on Kubernetes.
+    the shim does not parse these arguments and would need to be enlightened in
+    a similar manner as the Spin CLI to discern which are for which trigger.
+    While this is approach is technically feasible, the user experience is poor.
+    It unnecessarily requires the user to understand the Spin CLI in order to
+    use the Spin runtime on Kubernetes.
