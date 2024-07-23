@@ -138,9 +138,9 @@ Links and references should be kept up-to-date. If a link or reference is no lon
 be removed or updated. This includes links to other documents, websites, and so on.
 
 When referring to another document outside of the SpinKube github organization, such as a project
-README file, a blog post, or a website, consider its permanence. If the document is likely to
-change or move, consider copying the relevant information (and attribute the source), or link to a
-more stable source.
+README file, a blog post, or a website, consider its permanence. If the document is likely to change
+or move, consider copying the relevant information (and attribute the source), or link to a more
+stable source.
 
 ### Versioning
 
