@@ -31,8 +31,8 @@ documentation. In addition, each of our projects has its own README file in its 
 README files and the website are the primary sources of documentation for SpinKube.
 
 Moving forward, I propose that we establish a set of principles for how we document SpinKube and its
-projects the current system as a framework. These principles should be followed by all projects in
-the SpinKube ecosystem.
+projects using the current system as a framework. These principles should be followed by all
+existing and future projects in the SpinKube ecosystem.
 
 ### Prinicples
 
