@@ -50,8 +50,8 @@ Documentation should be written in American English. This includes spelling, gra
 punctuation. For example, use "color" instead of "colour", "center" instead of "centre", and "gray"
 instead of "grey".
 
-Use the active voice instead of the passive voice. For example, use "SpinKube creates a new
-SpinApp" instead of "A new SpinApp is created by SpinKube".
+Use the active voice instead of the passive voice. For example, use "SpinKube creates a new SpinApp"
+instead of "A new SpinApp is created by SpinKube".
 
 Use the present tense instead of the past tense. For example, use "SpinKube creates a new SpinApp"
 instead of "SpinKube created a new SpinApp".
@@ -75,6 +75,9 @@ Try to avoid using words that minimize the difficulty involved in a task or oper
 "easily", "simply", "just", "merely", "straightforward", and so on. People's experience may not
 match your expectations, and they may become frustrated when they do not find a step as
 "straightforward" or "simple" as it is implied to be.
+
+Sentences should be hard-wrapped at 100 characters. This makes it easier to read and edit the
+documentation in a text editor.
 
 In section titles, capitalize only initial words and proper nouns. For example, use "How to install
 SpinKube" instead of "How to Install SpinKube".
