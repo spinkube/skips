@@ -150,8 +150,8 @@ instructions for version 0.2.0. Features that are available in later versions of
 new feature in a development branch) should not be included in the documentation because the reader
 will not be able to use those features until SpinKube version 0.3.0.
 
-Note that this document does not propose a versioning scheme for spinkube.dev itself. That is a
-separate issue that should be addressed in a separate SKIP.
+Note that the current version of this document does not propose a versioning scheme for spinkube.dev
+itself. That is a separate issue that is considered out-of-scope for the current document.
 
 ## References
 
