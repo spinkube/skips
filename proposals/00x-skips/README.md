@@ -153,6 +153,12 @@ will not be able to use those features until SpinKube version 0.3.0.
 Note that the current version of this document does not propose a versioning scheme for spinkube.dev
 itself. That is a separate issue that is considered out-of-scope for the current document.
 
+## Open questions
+
+- how do we want to handle third-party documentation? Do we want to allow third-party content in
+  spinkube.dev? Do we want to put a notice in the content to suggest this has been tested by
+  SpinKube maintainers but is not officially maintained?
+
 ## References
 
 The following references were consulted in the creation of this SKIP:
