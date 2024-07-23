@@ -76,6 +76,11 @@ Try to avoid using words that minimize the difficulty involved in a task or oper
 match your expectations, and they may become frustrated when they do not find a step as
 "straightforward" or "simple" as it is implied to be.
 
+Try to avoid using acronyms and jargon that are not widely known. For example, use "Kubernetes"
+instead of "k8s", or "Custom Resource Definition" instead of "CRD". If you must use an acronym or
+jargon, define it the first time it is used in the document, and include a link to the glossary
+section of the document.
+
 Sentences should be hard-wrapped at 100 characters. This makes it easier to read and edit the
 documentation in a text editor.
 
