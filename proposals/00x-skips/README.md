@@ -93,6 +93,8 @@ Here are some style guidelines on commonly used terms throughout the documentati
 - email - no hyphen, lowercase.
 - GitHub - uppercase "G" and "H", no space.
 - Kubernetes - always capitalize the "K" in Kubernetes.
+- containerd - all lowercase.
+- Wasm - always capitalize the "W". It is not "WASM" or "wasm".
 - Spin - always capitalize the "S" in Spin.
 - SpinApp - always capitalize the "S" and "A" in SpinApp.
 
@@ -137,7 +139,7 @@ This information should be in the README file of each project.
 Links and references should be kept up-to-date. If a link or reference is no longer valid, it should
 be removed or updated. This includes links to other documents, websites, and so on.
 
-When referring to another document outside of the SpinKube github organization, such as a project
+When referring to another document outside of the SpinKube GitHub organization, such as a project
 README file, a blog post, or a website, consider its permanence. If the document is likely to change
 or move, consider copying the relevant information (and attribute the source), or link to a more
 stable source.
@@ -153,11 +155,13 @@ will not be able to use those features until SpinKube version 0.3.0.
 Note that the current version of this document does not propose a versioning scheme for spinkube.dev
 itself. That is a separate issue that is considered out-of-scope for the current document.
 
-## Open questions
+### Third-party content
 
-- how do we want to handle third-party documentation? Do we want to allow third-party content in
-  spinkube.dev? Do we want to put a notice in the content to suggest this has been tested by
-  SpinKube maintainers but is not officially maintained?
+We want to welcome third-party documentation. When including documentation maintained by someone
+other than the SpinKube maintainers, a notice should be included. For example:
+
+> Members of the community have contributed X to SpinKube. It has been tested by SpinKube
+> maintainers and is maintained by the community. It is generally kept up to date.
 
 ## References
 
