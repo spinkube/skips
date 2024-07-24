@@ -157,8 +157,9 @@ itself. That is a separate issue that is considered out-of-scope for the current
 
 ### Third-party content
 
-We want to welcome third-party documentation. When including documentation maintained by someone
-other than the SpinKube maintainers, a notice should be included. For example:
+We welcome documentation contributed and maintained by the broader open source community. When
+including documentation maintained by someone other than the SpinKube maintainers, a notice should
+be included. For example:
 
 > Members of the community have contributed X to SpinKube. It has been tested by SpinKube
 > maintainers and is maintained by the community. It is generally kept up to date.
