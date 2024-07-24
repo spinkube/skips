@@ -94,6 +94,7 @@ Here are some style guidelines on commonly used terms throughout the documentati
 - GitHub - uppercase "G" and "H", no space.
 - Kubernetes - always capitalize the "K" in Kubernetes.
 - containerd - all lowercase.
+- open source - no hyphen.
 - Wasm - always capitalize the "W". It is not "WASM" or "wasm".
 - Spin - always capitalize the "S" in Spin.
 - SpinApp - always capitalize the "S" and "A" in SpinApp.
