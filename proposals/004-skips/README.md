@@ -24,7 +24,7 @@ The [Runwasi] project supports running Wasm workloads in the same pod as Linux c
 [Sidecar Containers]: (https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/)
 [Runwasi]: (https://github.com/containerd/runwasi)
 [SpinApp CRD]: (https://www.spinkube.dev/docs/reference/spin-app/)
-[Spin Operators repository]: (https://github.com/spinkube/spin-operators)
+[Spin Operators repository]: (https://github.com/spinkube/spin-operator)
 
 ### User Stories
 
