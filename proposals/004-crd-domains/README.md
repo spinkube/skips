@@ -1,4 +1,4 @@
-# SKIP 00X - CRD Domains
+# SKIP 004 - CRD Domains
 
 Summary: We should pivot to using the _spinkube.dev_ domain for all CRDs.
 
