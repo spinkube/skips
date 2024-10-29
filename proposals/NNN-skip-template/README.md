@@ -2,7 +2,7 @@
 
 Summary: A one paragraph summary of your change
 
-Owner: The email of the proposer of the SKIP. 
+Owner: The email of the proposer of the SKIP.
 
 Impacted Projects:
 

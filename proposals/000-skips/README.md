@@ -1,8 +1,8 @@
 # SKIP 000 - What is a SKIP?
 
-Summary: A lightweight process for coordinating changes to SpinKube 
+Summary: A lightweight process for coordinating changes to SpinKube
 
-Owner: Danielle Lancashire <dani@builds.terrible.systems> 
+Owner: Danielle Lancashire <dani@builds.terrible.systems>
 
 Impacted Projects:
 
@@ -15,7 +15,7 @@ Impacted Projects:
 
 Created: 18/04/2024
 
-Updated: 18/04/2024 
+Updated: 18/04/2024
 
 ## Background
 
@@ -37,7 +37,7 @@ has changed.
 
 It is customary to refer to a SKIP by its number (”SKIP 004,” pronounced “skip
 oh-oh-four” or “skip four”). When necessary, it may also be referenced by its
-version (”SKIP 000 v1”) 
+version (”SKIP 000 v1”)
 
 ### The Document Head
 
@@ -45,12 +45,12 @@ Two pieces of information appear at the top of the document before the
 Background section:
 
 - **Overview:** This is one paragraph that summarizes the document. It should
-                contain both a summary of the decision point (problem) and a
-                summary of the proposed solution. 
+  contain both a summary of the decision point (problem) and a
+  summary of the proposed solution.
 
 - For any SKIPs exceeding a couple of pages, it is recommend that a table of
   contents also be added. In particular, with SKIPs that have many subheadings,
-  the table of contents can serve as an outline of the structure of the proposal. 
+  the table of contents can serve as an outline of the structure of the proposal.
 
 ### The Background Section
 
@@ -91,4 +91,3 @@ a works cited, but a bibliography that points to other related sources such as
 relevant SKIPs, external documentation, or witty XKCD comics.
 
 ## Alternatives Considered
-

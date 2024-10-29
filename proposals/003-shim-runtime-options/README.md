@@ -2,7 +2,7 @@
 
 Summary: Configuring Spin runtime options in the `containerd-shim-spin`
 
-Owner: Kate Goldenring <kate.goldenring@fermyon.com> 
+Owner: Kate Goldenring <kate.goldenring@fermyon.com>
 
 Impacted Projects:
 
@@ -54,14 +54,14 @@ application deployment as follows:
 
 ```yaml
 containers:
-- name: foo
-  env:
-  - name: NODE_IP
-    valueFrom:
-      fieldRef:
-        fieldPath: status.hostIP
-  - name: OTEL_EXPORTER_OTLP_ENDPOINT
-    value: "http://$(NODE_IP):4318"
+  - name: foo
+    env:
+      - name: NODE_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.hostIP
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: "http://$(NODE_IP):4318"
 ```
 
 However, this experience is not SpinKube-native, as there are no fields for
@@ -81,7 +81,7 @@ In summary, configuration can be broken out into two groups:
 
 - Spin application execution configuration - granular to the `SpinApp` CRD level
   - Spin runtime specific options (oftentimes in the form of CLI flags: `spin up
-    --listen "127.0.0.1:3000"`)
+--listen "127.0.0.1:3000"`)
   - Spin runtime environment variables (such as
     `OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318 spin up` )
 - Shim execution configuration - granular to the `SpinAppExecutor` level
@@ -91,7 +91,7 @@ In summary, configuration can be broken out into two groups:
 ## Terminology
 
 | Term                       | Definition                                                                                                                                                                                                                                                                   |
-|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Container runtime          | A program that runs and manages the lifecycle of containers, or in this case Spin apps, i.e. Youki.                                                                                                                                                                          |
 | CRD                        | Custom Resource Definition, a Kubernetes extension mechanism for defining custom resources                                                                                                                                                                                   |
 | Environment Variables      | Variables that are part of the environment in which a process runs                                                                                                                                                                                                           |
@@ -114,7 +114,7 @@ following categories of configuration:
 - Executor configuration
 
 The first category pertains to the execution of a single Spin application, while
-the later discusses how to configure the platform. 
+the later discusses how to configure the platform.
 
 This SKIP focuses on how the `containerd-shim-spin` and `runwasi` will consume
 configuration. While this SKIP encourages the use of the SpinKube `SpinApp` and
@@ -129,7 +129,7 @@ variables, which are exposed to the shim. The following is a subset of
 configuration values that may be supported:
 
 | Key                         | Spin CLI                                                    | Example Value           |
-|-----------------------------|-------------------------------------------------------------|-------------------------|
+| --------------------------- | ----------------------------------------------------------- | ----------------------- |
 | SPIN_HTTP_LISTEN_ADDR       | `spin up --listen`                                          | "0.0.0.0:3000"          |
 | OTEL_EXPORTER_OTLP_ENDPOINT | `OTEL_EXPORTER_OTLP_ENDPOINT=http://123.4.5.6:4318 spin up` | "http://123.4.5.6:4318" |
 | SPIN_LOG_DIR                | `spin up --log-dir /tmp/log`                                | "/tmp/log"              |
@@ -261,10 +261,10 @@ own configuration from these containerd runtime options.
 
 The following are Spin shim and Runwasi options that should be configurable:
 
-| Key                             | Example Value | Scope                                                                                                                                                           |
-|---------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DISABLE_PRECOMPILATION          | "true"        | containerd-shim-spin or [Runwasi](https://github.com/containerd/runwasi/blob/7cc5e5a8025f1508c264dee1faf1c8c57cf645a1/crates/containerd-shim-wasm/src/sandbox/containerd/client.rs#L38)                                                                                                                                                            |
-| GRPC_MAX_WRITE_CHUNK_SIZE_BYTES | "15728640"    | [Runwasi](https://github.com/containerd/runwasi/blob/7cc5e5a8025f1508c264dee1faf1c8c57cf645a1/crates/containerd-shim-wasm/src/sandbox/containerd/client.rs#L38) |
+| Key                             | Example Value | Scope                                                                                                                                                                                   |
+| ------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DISABLE_PRECOMPILATION          | "true"        | containerd-shim-spin or [Runwasi](https://github.com/containerd/runwasi/blob/7cc5e5a8025f1508c264dee1faf1c8c57cf645a1/crates/containerd-shim-wasm/src/sandbox/containerd/client.rs#L38) |
+| GRPC_MAX_WRITE_CHUNK_SIZE_BYTES | "15728640"    | [Runwasi](https://github.com/containerd/runwasi/blob/7cc5e5a8025f1508c264dee1faf1c8c57cf645a1/crates/containerd-shim-wasm/src/sandbox/containerd/client.rs#L38)                         |
 
 Ideally, these options could be set in the `SpinAppExecutor` CRD. Then, the
 RuntimeClassManager can watch the resource and update and restart containerd as
@@ -289,6 +289,7 @@ systemd service file. First, stop the service and bring up the service file:
 systemctl stop containerd
 systemctl edit containerd
 ```
+
 > note, for k3s, edit the k3s service (`systemctl edit k3s`)
 
 At the top of the file, add the environment variable to the service:
@@ -358,23 +359,23 @@ The following are alternate strategies for configuring the Spin runtime in the
    this.
 6. Flags for `spin up` could be exposed as container arguments rather than
    environment variables, such as the following in a Kubernetes PodSpec:
-    ```sh
-      containers:
-      - name: spin-test
-        image: ghcr.io/deislabs/containerd-wasm-shims/examples/spin-rust-hello:v0.10.0
-        command: ["/"]
-        args: ["--listen", "0.0.0.0:3000"]
-    ```
-    While the shim currently has access to these arguments from the
-    [`RuntimeContext`
-    args](https://github.com/containerd/runwasi/blob/f5f497c4b21a5d55613095a3ae878c4ef4b83b91/crates/containerd-shim-wasm/src/container/context.rs#L14),
-    the shim does not parse these arguments and would need to be enlightened in
-    a similar manner as the Spin CLI to discern which are for which trigger.
-    While this is approach is technically feasible, the user experience is poor.
-    It unnecessarily requires the user to understand the Spin CLI in order to
-    use the Spin runtime on Kubernetes.
+   ```sh
+     containers:
+     - name: spin-test
+       image: ghcr.io/deislabs/containerd-wasm-shims/examples/spin-rust-hello:v0.10.0
+       command: ["/"]
+       args: ["--listen", "0.0.0.0:3000"]
+   ```
+   While the shim currently has access to these arguments from the
+   [`RuntimeContext`
+   args](https://github.com/containerd/runwasi/blob/f5f497c4b21a5d55613095a3ae878c4ef4b83b91/crates/containerd-shim-wasm/src/container/context.rs#L14),
+   the shim does not parse these arguments and would need to be enlightened in
+   a similar manner as the Spin CLI to discern which are for which trigger.
+   While this is approach is technically feasible, the user experience is poor.
+   It unnecessarily requires the user to understand the Spin CLI in order to
+   use the Spin runtime on Kubernetes.
 7. Instead of setting container environment variables as Spin application
-   variables, all container   environment variables could be injected into all
+   variables, all container environment variables could be injected into all
    components of the Spin application by default. As explained in the [Spin
    Application Variables](#spin-application-variables), this expands the Wasm
    sandbox and does not fit with the objectives of the component model.
