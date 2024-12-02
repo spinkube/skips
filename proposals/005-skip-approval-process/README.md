@@ -25,7 +25,7 @@ SKIPs were designed as a lightweight way to have discussions about changes that 
 
 The following conditions must be met for a SKIP to be considered approved:
 
-- The SKIP has been open for comment for at least two weeks and any objecting comments are resolved.
+- The SKIP has been open for comment for at least two weeks and all comments are resolved.
 - The SKIP has been approved by at least two maintainers who are not an author.
 - The SKIP has been approved by at least one maintainer of each different impacted project[^1].
 - The SKIP has been discussed as an agenda item in at least one SpinKube community meeting[^2].
